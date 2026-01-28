@@ -1,7 +1,7 @@
 import discord, json, os, re, subprocess, sys, time
 from anyio import open_file
 from discord import option
-#from discord.ext import tasks
+from discord.ext import tasks
 #from pathlib import Path
 
 sys.stdout.reconfigure(line_buffering=True)
@@ -68,6 +68,7 @@ async def read_stationeers_log():
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
+    stationeers_log_check.start()
 
 
 @bot.slash_command(guild_ids=config['guilds'], description="test command")
@@ -115,6 +116,36 @@ async def statusstationeers(ctx):
         return
     await ctx.respond(f"```\n{status_stationeers()}\n```")
 
+
+
+@bot.slash_command(guild_ids=config['guilds'], description="Enable channel log notifications")
+async def enablelognotifications(ctx):
+    RequiredPermissionLevel = 10
+    if await test_farmbot_user_permission_level(ctx, RequiredPermissionLevel) != True:
+        return
+    if ctx.channel.id not in userconfig['log_channels']:
+        Channel = bot.get_channel(ctx.channel.id)
+        if Channel.can_send:
+            userconfig['log_channels'].append(ctx.channel.id)
+            write_userconfig()
+            await ctx.respond("Log notifications enabled.")
+        else:
+            await ctx.respond("Cannot send messages to this channel, please fix permissions and try again.")
+    else:
+        await ctx.respond("Log notifications were already enabled, no changes made.")
+
+
+@bot.slash_command(guild_ids=config['guilds'], description="Disable channel log notifications")
+async def disablelognotifications(ctx):
+    RequiredPermissionLevel = 10
+    if await test_farmbot_user_permission_level(ctx, RequiredPermissionLevel) != True:
+        return
+    if ctx.channel.id in userconfig['log_channels']:
+        userconfig['log_channels'].remove(ctx.channel.id)
+        write_userconfig()
+        await ctx.respond("Log notifications disabled.")
+    else:
+        await ctx.respond("Log notifications were not enabled, no changes made.")
 
 
 @bot.slash_command(guild_ids=config['guilds'], description="Enable channel update notifications")
@@ -365,6 +396,26 @@ async def send_notification(string):
             print(f"Cannot send update notification to channel {Id} due to permissions")
 
 
+async def send_log(string):
+    for Id in userconfig['log_channels']:
+        Channel = bot.get_channel(Id)
+        if Channel.can_send:
+            await Channel.send(string, silent=True)
+        else:
+            print(f"Cannot send update notification to channel {Id} due to permissions")
+
+
+LogRegex = re.compile(r'^\d{2}:\d{2}:\d{2}: (Version|file:|WorldSetting:|World Loaded|StartSession|Client: \w+ \(\d+\). Connected.|Client \w+ \(\d+\) is ready|Client disconnected:|No clients connected|Starting AutoSave|Saving - file created)')
+@tasks.loop(seconds=1)
+async def stationeers_log_check():
+    LogLines = await read_stationeers_log()
+    if LogLines:
+        for Line in LogLines:
+            Match = re.match(LogRegex, Line)
+            if Match:
+                print(f"Log:{Line}")
+                await send_log(f"```\n{Line}\n```")
+
 
 global userconfig
 
@@ -375,6 +426,8 @@ else:
 
 if 'notification_channels' not in userconfig:
     userconfig['notification_channels'] = []
+if 'log_channels' not in userconfig:
+    userconfig['log_channels'] = []
 if 'notified_version' not in userconfig:
     userconfig['notified_version'] = ''
 if 'automatic_updates' not in userconfig:
