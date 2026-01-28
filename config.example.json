@@ -3,9 +3,7 @@
     "guilds": [
         "yourguildnumberhere"
     ],
-    "factorio_path": "/opt/factorio",
-    "rcon_password": "yourrconpasswordhere",
-    "rcon_port": 12345,
+    "stationeers_path": "/opt/stationeers",
     "farmbot_default_admin_discord_users": [
         {
             "id": 12345,

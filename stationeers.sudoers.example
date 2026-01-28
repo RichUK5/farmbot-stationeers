@@ -1,0 +1,3 @@
+Cmnd_Alias         STATIONEERS_BIN = /bin/systemctl restart stationeers, /bin/systemctl start stationeers, /bin/systemctl/stop stationeers
+Cmnd_Alias         STATIONEERS_USR_BIN = /usr/bin/systemctl restart stationeers, /usr/bin/systemctl start stationeers, /usr/bin/systemctl stop stationeers
+farmbot-stationeers   ALL = NOPASSWD: STATIONEERS_BIN,STATIONEERS_USR_BIN

@@ -1,3 +1,0 @@
-Cmnd_Alias         FACTORIO_BIN = /bin/systemctl restart factorio, /bin/systemctl start factorio, /bin/systemctl/stop factorio
-Cmnd_Alias         FACTORIO_USR_BIN = /usr/bin/systemctl restart factorio, /usr/bin/systemctl start factorio, /usr/bin/systemctl stop factorio
-farmbot-factorio   ALL = NOPASSWD: FACTORIO_BIN,FACTORIO_USR_BIN

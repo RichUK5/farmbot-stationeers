@@ -1,0 +1,18 @@
+[Unit]
+Description=Stationeers Server
+StartLimitIntervalSec=20
+StartLimitBurst=2
+
+[Service]
+ExecStartPre=+/usr/games/steamcmd +login anonymous +force_install_dir /opt/Stationeers +app_update 600760 validate +quit
+ExecStart=/opt/Stationeers/rocketstation_DedicatedServer.x86_64 -file start CwisMars -logFile "./server.log" -settings StartLocalHost true ServerVisible true GamePort 27201 UPNPEnabled false ServerName "FarmHost Continuum" ServerPassword "youruserpassword" ServerMaxPlayers 10 AutoSave true SaveInterval 300 ServerAuthSecret "youradminpassword" UpdatePort 27200 AutoPauseServer true UseSteamP2P false LocalIpAddress 0.0.0.0
+WorkingDirectory=/opt/Stationeers
+Restart=on-failure
+Type=simple
+User=stationeers
+Group=stationeers
+KillSignal=SIGINT
+MemoryMax=16G
+
+[Install]
+WantedBy=multi-user.target

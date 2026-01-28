@@ -1,0 +1,16 @@
+[Unit]
+Description=Farmbot Stationeers
+StartLimitIntervalSec=60
+StartLimitBurst=2
+
+[Service]
+ExecStart=/opt/farmbot-stationeers/farmbot-stationeers-env/bin/python3 /opt/farmbot-stationeers/farmbot.py
+WorkingDirectory=/opt/farmbot-stationeers
+Restart=on-failure
+Type=simple
+User=farmbot-stationeers
+Group=farmbot-stationeers
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
