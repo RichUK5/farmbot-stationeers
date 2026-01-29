@@ -405,7 +405,7 @@ async def send_log(string):
             print(f"Cannot send update notification to channel {Id} due to permissions")
 
 
-LogRegex = re.compile(r'^\d{2}:\d{2}:\d{2}: (Version|file:|WorldSetting:|World Loaded|StartSession|Client: \w+ \(\d+\). Connected.|Client \w+ \(\d+\) is ready|Client disconnected:|No clients connected|Starting AutoSave|Saving - file created)')
+LogRegex = re.compile(r'^\d{2}:\d{2}:\d{2}: (Version|file:|WorldSetting:|World Loaded|StartSession|Client: [^(]+\(\d+\). Connected. \d+ / \d+$|Client [^(]+\(\d+\) is ready$|Client disconnected:|No clients connected|Starting AutoSave|Saving - file created)')
 @tasks.loop(seconds=1)
 async def stationeers_log_check():
     LogLines = await read_stationeers_log()
